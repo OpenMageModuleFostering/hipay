@@ -22,8 +22,8 @@ ul.tabs a.hipay-section span {
     background:url("images/hipay_section_logo.png") no-repeat scroll 0 0 transparent;
     height:0;
     overflow:hidden;
-    padding:14px 0 0;
-    width:49px;
+    padding:25px 0 0;
+    width:196px;
 }
 ul.tabs a.hipay-section:hover span {
     background:url("images/hipay_section_logo_hover.png") no-repeat scroll 0 0 transparent;
@@ -37,8 +37,8 @@ ul.tabs a.hipay-section.active:hover span {
     
     height:0;
     overflow:hidden;
-    padding:14px 0 0;
-    width:49px;
+    padding:25px 0 0;
+    width:196px;
 }
 
 /* ## SECTION NOTICE ************************************** ## */
@@ -69,8 +69,8 @@ h3.hipay-header {
 	background:url(images/hipay_section_logo.png) no-repeat 0 0; 
 	height:0; 
 	overflow:hidden; 
-	padding:14px 0 0; 
-	width:49px; 
+	padding:25px 0 0; 
+	width:196px; 
 }
 
 a.hipay-pdf-link {

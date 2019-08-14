@@ -73,7 +73,7 @@ class HimediaPayments_Hipay_MapiController extends Mage_Core_Controller_Front_Ac
         
     	try 
         {
-        	Mage::log("Modul aktiviert? '" . Mage::getStoreConfig('hipay/general/active') /*((int) $this->getConfigData('active'))*/ . "'");
+        	Mage::log("Modul aktiviert? '" . Mage::getStoreConfig('hipay/general/active') . "'");
         	
             $session = $this->_getCheckout();
             $order = Mage::getModel('sales/order');
@@ -92,7 +92,7 @@ class HimediaPayments_Hipay_MapiController extends Mage_Core_Controller_Front_Ac
 	        	$order->save();
 	        	
 	        	$paymentUrl = Mage::getUrl("hipay/mapi/redirect/");
-	        	$message = Mage::helper('hipaymod')->__('You will be redirected to Hipay ...');
+	        	$message = Mage::helper('hipaymod')->__('You will be redirected to our secure payment page when you complete your order.');
 	        	
 	        	Mage::log("order ID: " . $orderId);
 	        	Mage::log("payment Url: " . $paymentUrl . $orderId);
@@ -183,20 +183,7 @@ class HimediaPayments_Hipay_MapiController extends Mage_Core_Controller_Front_Ac
     	try 
     	{
         	if($this->checkToken()) 
-        	{
-//        		$session = $this->_getCheckout();
-//    		
-//				$order = Mage::getModel('sales/order');
-//        		$order->loadByIncrementId($session->getLastRealOrderId());
-//        		
-//        		$order->addStatusHistoryComment(Mage::helper('hipaymod')->__('The customer has successfully paid via Hipay'), 
-//        										Mage_Sales_Model_Order::STATE_PROCESSING )
-//        										->setIsCustomerNotified(true);
-//        		$order->save();
-//        						
-//        		$order->sendNewOrderEmail();
-//        		$order->save();
-        		
+        	{       		
         		$this->_redirect('checkout/onepage/success');	
         	}
         	else 
@@ -221,26 +208,52 @@ class HimediaPayments_Hipay_MapiController extends Mage_Core_Controller_Front_Ac
 		Mage::log('MapiController > cancelAction');
 		
     	try 
-    	{
-    		Mage::log("Hipay POST data: [");
-        	Mage::log($_POST);
-        	Mage::log("]");
-    		
+    	{    		
+    		$postData = $_POST;
         	if($this->checkToken())
         	{
-	    		if($this->requestHasValidPostData())
-		        {
-		    		$session = $this->_getCheckout();
-		
+        		#
+        		# MAJ JPN le 30/11/2015
+        		# Prise en compte de l'annulation dans données POST
+        		# Contrôle commande + reinit du panier avec les données préchargées
+        		#
+	        	if(empty($postData)){
+	        		// init des id panier et commande
+	        		$lastQuoteId = $this->_getCheckout()->getLastQuoteId();
+					$lastOrderId = $this->_getCheckout()->getLastOrderId();
+					// init de l'objet panier
+	        		$orderModel = Mage::getModel('sales/order')->load($lastOrderId);
+			        if($orderModel->canCancel()) {	
+			        	// init du panier avec son id		
+			            $quote = Mage::getModel('sales/quote')->load($lastQuoteId);
+			            // on active le panier et enregistrement
+			            $quote->setIsActive(true)->save();
+			            // on met la commande en mode cancel
+			            $orderModel->cancel();
+			            // ajout du status annulée + enregistrement
+			            $orderModel->setStatus('canceled');
+			            $orderModel->save();
+			            // init du message de l'erreur
+			            Mage::getSingleton('core/session')->setFailureMsg('order_failed');
+			            Mage::getSingleton('checkout/session')->setFirstTimeChk('0');
+			            // init du message d'erreur qui s'affichera au redirect sur la page panier
+			            Mage::getSingleton('core/session')->addError(__('Your order has been canceled because you have canceled the payment process.'));
+			            // on redirige le client sur le panier
+			            $this->_redirect('checkout/cart', array("_forced_secure" => true));
+			            return;
+			        }
+	        	}elseif ( $this->requestHasValidPostData()) {
+	        		Mage::log('Array POST [');
+	        		Mage::log($_POST);
+	        		Mage::log(']');
+	        		$session = $this->_getCheckout();		
 					$order = Mage::getModel('sales/order');
 		        	$order->loadByIncrementId($session->getLastRealOrderId());
 		        	$order->cancel();
 					$order->addStatusHistoryComment(Mage::helper('hipaymod')->__('Payment has been canceled by customer'),
 													Mage_Sales_Model_Order::STATE_CANCELED);
-		        	$order->save();
-		        	
+		        	$order->save();			        	
 		        	$order->sendOrderUpdateEmail(Mage::helper('hipaymod')->__('Your order has been canceled because you have canceled the payment process.'));
-		    	
 		        	$this->_redirect('checkout/onepage/failure');
 	        	}
 		        else
@@ -274,14 +287,43 @@ class HimediaPayments_Hipay_MapiController extends Mage_Core_Controller_Front_Ac
     	
         try 
     	{
-    		Mage::log("Hipay POST data: [");
-        	Mage::log($_POST);
-        	Mage::log("]");
-        	
+    		$postData = $_POST;
         	if($this->checkToken())
         	{
-	    		if($this->requestHasValidPostData())
-		        {
+        		#
+        		# MAJ JPN le 30/11/2015
+        		# Prise en compte de l'annulation dans données POST
+        		# Contrôle commande + reinit du panier avec les données préchargées
+        		#
+	        	if(empty($postData)){
+	        		// init des id panier et commande
+	        		$lastQuoteId = $this->_getCheckout()->getLastQuoteId();
+					$lastOrderId = $this->_getCheckout()->getLastOrderId();
+					// init de l'objet panier
+	        		$orderModel = Mage::getModel('sales/order')->load($lastOrderId);
+			        if($orderModel->canCancel()) {	
+			        	// init du panier avec son id		
+			            $quote = Mage::getModel('sales/quote')->load($lastQuoteId);
+			            // on active le panier et enregistrement
+			            $quote->setIsActive(true)->save();
+			            // on met la commande en mode cancel
+			            $orderModel->cancel();
+			            // ajout du status annulée + enregistrement
+			            $orderModel->setStatus('canceled');
+			            $orderModel->save();
+			            // init du message de l'erreur
+			            Mage::getSingleton('core/session')->setFailureMsg('order_failed');
+			            Mage::getSingleton('checkout/session')->setFirstTimeChk('0');
+			            // init du message d'erreur qui s'affichera au redirect sur la page panier
+			            Mage::getSingleton('core/session')->addError(__('Your order has been canceled because the payment process failed.'));
+			            // on redirige le client sur le panier
+			            $this->_redirect('checkout/cart', array("_forced_secure" => true));
+			            return;
+			        }
+	        	}elseif ( $this->requestHasValidPostData()) {
+	        		Mage::log('Array POST [');
+	        		Mage::log($_POST);
+	        		Mage::log(']');
 		    		$session = $this->_getCheckout();
 		    		
 					$order = Mage::getModel('sales/order');

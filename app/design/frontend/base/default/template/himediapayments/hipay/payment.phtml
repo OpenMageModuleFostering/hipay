@@ -50,27 +50,6 @@ body {
 	text-align:left;
 }
 
-.hipay_redirect_infobox_head {
-	background-image: url("<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_SKIN); ?>frontend/base/default/images/himediapayments/hipay/hipay_redirect_frame_top.png");
-	background-attachment: scroll;
-	background-position: top;
-	background-repeat: no-repeat;
-    background-color: transparent;
-    overflow:hidden;
-    width:620px;
-    padding:0;
-    margin-top:150px;
-    min-height:150px;
-}
-
-.hipay_redirect_infobox_bottom {
-	background:url("<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_SKIN); ?>frontend/base/default/images/himediapayments/hipay/hipay_redirect_frame_bottom.png") bottom no-repeat scroll transparent;
-    overflow:hidden;
-    width:620px;
-    padding:0;
-    margin:0;
-}
-
 .hipay_redirect_infobox_content {
 	margin-top:75px;
 	text-align: center;
@@ -88,19 +67,14 @@ body {
 }
 
 </style>
-
-
 <div class="hipay_centered_content">
-	<div class="hipay_redirect_infobox_bottom">
-    	<div class="hipay_redirect_infobox_head">
-	       	<div class="hipay_redirect_infobox_content">
-    			<span <?php if(!empty($paymentUrl)) { ?>class="show_loader_image"<?php }; ?>>
-    				<?php echo $message ?>
-    			</span>
-    		</div>
-    	</div>
-    </div>
-</div>    
+	<div class="hipay_redirect_infobox_content">
+		<img src="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_SKIN); ?>frontend/base/default/images/himediapayments/hipay/hipay_wallet_mg_logo.jpg" /><br />
+		<span <?php if(!empty($paymentUrl)) { ?>class="show_loader_image"<?php }; ?>>
+			<?php echo $message ?>
+		</span>
+	</div>
+</div>
 
 <?php if(!empty($paymentUrl)) { ?>
 	<script type="text/javascript">parent.location.href="<?php echo $paymentUrl ?>";</script>
