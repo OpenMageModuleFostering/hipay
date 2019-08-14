@@ -1,0 +1,16 @@
+{
+    "name": "OpenMageModuleFostering/Hipay",
+    "type": "magento-module",
+    "license": "BSD-License",
+    "homepage": "",
+    "description": "Official HiPay wallet payment extension.",
+    "authors": [
+    {
+        "name": "HiPay",
+        "email": "technique@hipay.com"
+    }
+],
+    "suggest": {
+        "magento-hackathon/magento-composer-installer": "*"
+    }
+}
